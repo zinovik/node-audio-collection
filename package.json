@@ -1,0 +1,45 @@
+{
+  "name": "node-audio-collection",
+  "version": "0.0.1",
+  "description": "node audio collection",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --config jestconfig.json",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint"
+  },
+  "engines": {
+    "node": "12.0.0",
+    "npm": "6.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zinovik/node-audio-collection.git"
+  },
+  "author": "Max Zinovik",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/zinovik/node-audio-collection/issues"
+  },
+  "homepage": "https://github.com/zinovik/node-audio-collection#readme",
+  "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "jest": "^24.8.0",
+    "prettier": "^1.17.1",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.16.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.4.5"
+  },
+  "dependencies": {
+    "node-id3": "^0.1.7"
+  },
+  "files": [
+    "lib/**/*"
+  ]
+}
