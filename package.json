@@ -1,10 +1,10 @@
 {
   "name": "node-audio-collection",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "node audio collection",
   "main": "lib/index.js",
   "bin": {
-    "nac": "lib/app.js"
+    "node-audio-collection": "lib/index.js"
   },
   "types": "lib/index.d.ts",
   "scripts": {
