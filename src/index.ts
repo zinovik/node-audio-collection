@@ -14,16 +14,16 @@ import { IArtist } from './interfaces/IArtist.interface';
 import { IAlbum } from './interfaces/IAlbum.interface';
 
 console.log('node audio collection started!');
-console.log(`process.cwd(): ${process.cwd()}`);
 
-if (!process.argv[2]) {
+const FOLDER_NAME = process.argv[2];
+const IS_SKIP_DURATION = process.argv[3] === 'sd';
+
+if (!FOLDER_NAME) {
   console.log('Please, provide music directory as parameter');
-  throw new Error();
+  throw new Error('Please, provide music directory as parameter');
 }
 
-const MUSIC_DIR = `${process.cwd()}/${process.argv[2]}`;
-
-console.log(`Music directory: ${MUSIC_DIR}`);
+const MUSIC_DIR = `${process.cwd()}/${FOLDER_NAME}`;
 
 const getGenreFromFile = (filePath: string): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -78,13 +78,41 @@ const formatDuration = (duration: number): string => {
 };
 
 const formatTree = (tree: ITree) => {
+  let treeFormatted = `${tree.folder}\n`;
+  treeFormatted += `----------------------------------------------------------------------------\n`;
+
   for (const artist of tree.artists) {
-    console.log(`${artist.name.padEnd(53, ' ')}(${formatDuration(artist.duration)})`);
+    treeFormatted += `${artist.name.padEnd(52, ' ')}`;
+
+    if (!IS_SKIP_DURATION) {
+      treeFormatted += `(${formatDuration(artist.duration)})\n`;
+    }
+
+    treeFormatted += `\n`;
 
     for (const album of artist.albums) {
-      console.log(`  ${album.name.padEnd(50, ' ')} (${formatDuration(album.duration)}) ${album.genre}`);
+      treeFormatted += `  ${album.name.padEnd(50, ' ')}`;
+
+      if (!IS_SKIP_DURATION) {
+        treeFormatted += `(${formatDuration(album.duration)})`;
+      }
+
+      treeFormatted += ` ${album.genre}\n`;
     }
   }
+
+  treeFormatted += `----------------------------------------------------------------------------\n`;
+  treeFormatted += `Artists: ${tree.artists.length};     Albums: ${tree.albumsCount};     Songs: ${tree.songsCount};`;
+
+  if (!IS_SKIP_DURATION) {
+    treeFormatted += `Duration: ${formatDuration(tree.duration)}`;
+  }
+
+  return treeFormatted;
+};
+
+const writeListToFile = async (list: string): Promise<void> => {
+  await promisify(fs.writeFile)('node-audio-collection.txt', list);
 };
 
 (async () => {
@@ -93,28 +121,33 @@ const formatTree = (tree: ITree) => {
 
   const artists: IArtist[] = [];
   let totalDuration = 0;
+  let totalAlbumsCount = 0;
+  let totalSongsCount = 0;
   const artistsCount = artistsNames.length;
-  let currentArtist = 0;
+  let currentArtist = 1;
 
   for (const artist of artistsNames) {
-    console.log(`Artist: ${currentArtist++} / ${artistsCount}`);
+    console.log(`Artist ${currentArtist++} of ${artistsCount}`);
 
     const albumsNames = await getFolderContents({ path: `${MUSIC_DIR}/${artist}`, isSkipFiles: true });
 
     const albums: IAlbum[] = [];
     let artistDuration = 0;
     const albumsCount = albumsNames.length;
+    totalAlbumsCount += albumsCount;
     let currentAlbum = 1;
 
     for (const album of albumsNames) {
-      console.log(` Album: ${currentAlbum++} / ${albumsCount}`);
+      console.log(`              Album ${currentAlbum++} of ${albumsCount}`);
       const songs = await getFolderContents({ path: `${MUSIC_DIR}/${artist}/${album}`, isSkipFolders: true });
+
+      totalSongsCount += songs.length;
 
       const albumGenre = await getGenreFromFile(`${MUSIC_DIR}/${artist}/${album}/${songs[0]}`);
       let albumDuration = 0;
 
       for (const song of songs) {
-        const duration = await getDurationFromFile(`${MUSIC_DIR}/${artist}/${album}/${song}`);
+        const duration = IS_SKIP_DURATION ? 0 : await getDurationFromFile(`${MUSIC_DIR}/${artist}/${album}/${song}`);
 
         albumDuration += duration;
       }
@@ -139,11 +172,16 @@ const formatTree = (tree: ITree) => {
   }
 
   const tree: ITree = {
+    folder: FOLDER_NAME,
     artists,
     duration: totalDuration,
-    albumsCount: 0,
-    songsCount: 0,
+    albumsCount: totalAlbumsCount,
+    songsCount: totalSongsCount,
   };
 
-  formatTree(tree);
+  console.log('\n');
+  console.log(formatTree(tree));
+  console.log('\n');
+  await writeListToFile(formatTree(tree));
+  console.log('collection was saved to file node-audio-collection.txt');
 })();
