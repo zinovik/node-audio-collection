@@ -1,8 +1,11 @@
 {
   "name": "node-audio-collection",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "node audio collection",
   "main": "lib/index.js",
+  "bin": {
+    "nac": "lib/app.js"
+  },
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
