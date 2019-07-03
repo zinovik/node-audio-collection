@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import * as fs from 'fs';
 import * as moment from 'moment';
 import { promisify } from 'util';
@@ -94,14 +95,17 @@ const formatTree = (tree: ITree) => {
   let currentArtist = 0;
 
   for (const artist of artistsNames) {
-    console.log(`${100 * currentArtist++ / artistsCount} %`);
+    console.log(`Artist: ${currentArtist++} / ${artistsCount}`);
 
     const albumsNames = await getFolderContents({ path: `${MUSIC_DIR}/${artist}`, isSkipFiles: true });
 
     const albums: IAlbum[] = [];
     let artistDuration = 0;
+    const albumsCount = albumsNames.length;
+    let currentAlbum = 1;
 
     for (const album of albumsNames) {
+      console.log(`Artist: ${currentAlbum++} / ${albumsCount}`);
       const songs = await getFolderContents({ path: `${MUSIC_DIR}/${artist}/${album}`, isSkipFolders: true });
 
       const albumGenre = await getGenreFromFile(`${MUSIC_DIR}/${artist}/${album}/${songs[0]}`);
