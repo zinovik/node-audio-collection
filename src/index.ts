@@ -14,12 +14,14 @@ import { IArtist } from './interfaces/IArtist.interface';
 import { IAlbum } from './interfaces/IAlbum.interface';
 
 console.log('node audio collection started!');
+console.log(`process.cwd(): ${process.cwd()}`);
 
 if (!process.argv[2]) {
   console.log('Please, provide music directory as parameter');
+  throw new Error();
 }
 
-const MUSIC_DIR = `${__dirname}/../${process.argv[2]}`;
+const MUSIC_DIR = `${process.cwd()}/${process.argv[2]}`;
 
 console.log(`Music directory: ${MUSIC_DIR}`);
 
@@ -105,7 +107,7 @@ const formatTree = (tree: ITree) => {
     let currentAlbum = 1;
 
     for (const album of albumsNames) {
-      console.log(`Artist: ${currentAlbum++} / ${albumsCount}`);
+      console.log(` Album: ${currentAlbum++} / ${albumsCount}`);
       const songs = await getFolderContents({ path: `${MUSIC_DIR}/${artist}/${album}`, isSkipFolders: true });
 
       const albumGenre = await getGenreFromFile(`${MUSIC_DIR}/${artist}/${album}/${songs[0]}`);
