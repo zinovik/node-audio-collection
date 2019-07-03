@@ -4,7 +4,7 @@
   "description": "node audio collection",
   "main": "lib/index.js",
   "bin": {
-    "node-audio-collection": "lib/index.js"
+    "node-audio-collection": "./lib/index.js"
   },
   "types": "lib/index.d.ts",
   "scripts": {

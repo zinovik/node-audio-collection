@@ -12,7 +12,15 @@ import { ITree } from './interfaces/ITree.interface';
 import { IArtist } from './interfaces/IArtist.interface';
 import { IAlbum } from './interfaces/IAlbum.interface';
 
+console.log('node audio collection started!');
+
+if (!process.argv[2]) {
+  console.log('Please, provide music directory as parameter');
+}
+
 const MUSIC_DIR = `${__dirname}/../${process.argv[2]}`;
+
+console.log(`Music directory: ${MUSIC_DIR}`);
 
 const getGenreFromFile = (filePath: string): Promise<string> => {
   return new Promise((resolve, reject) => {
