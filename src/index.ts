@@ -13,14 +13,16 @@ import { ITree } from './interfaces/ITree.interface';
 import { IArtist } from './interfaces/IArtist.interface';
 import { IAlbum } from './interfaces/IAlbum.interface';
 
-console.log('node audio collection started!');
+console.log('node-audio-collection started!\n');
+
+const dateStart = moment();
 
 const FOLDER_NAME = process.argv[2];
 const IS_SKIP_DURATION = process.argv[3] === 'sd';
 
 if (!FOLDER_NAME) {
-  console.log('Please, provide music directory as parameter');
-  throw new Error('Please, provide music directory as parameter');
+  console.log('Please, provide music directory as a parameter!');
+  throw new Error('Please, provide music directory as a parameter!');
 }
 
 const MUSIC_DIR = `${process.cwd()}/${FOLDER_NAME}`;
@@ -79,10 +81,10 @@ const formatDuration = (duration: number): string => {
 
 const formatTree = (tree: ITree) => {
   let treeFormatted = `${tree.folder}\n`;
-  treeFormatted += `----------------------------------------------------------------------------\n`;
+  treeFormatted += `${''.padEnd(140, '-')}\n`;
 
   for (const artist of tree.artists) {
-    treeFormatted += `${artist.name.padEnd(52, ' ')}`;
+    treeFormatted += `${artist.name.padEnd(112, ' ')}`;
 
     if (!IS_SKIP_DURATION) {
       treeFormatted += `(${formatDuration(artist.duration)})\n`;
@@ -91,7 +93,7 @@ const formatTree = (tree: ITree) => {
     treeFormatted += `\n`;
 
     for (const album of artist.albums) {
-      treeFormatted += `  ${album.name.padEnd(50, ' ')}`;
+      treeFormatted += `  ${album.name.padEnd(110, ' ')}`;
 
       if (!IS_SKIP_DURATION) {
         treeFormatted += `(${formatDuration(album.duration)})`;
@@ -101,11 +103,11 @@ const formatTree = (tree: ITree) => {
     }
   }
 
-  treeFormatted += `----------------------------------------------------------------------------\n`;
-  treeFormatted += `Artists: ${tree.artists.length};     Albums: ${tree.albumsCount};     Songs: ${tree.songsCount};`;
+  treeFormatted += `${''.padEnd(140, '-')}\n`;
+  treeFormatted += `Artists: ${tree.artists.length}                    Albums: ${tree.albumsCount}                    Songs: ${tree.songsCount}`;
 
   if (!IS_SKIP_DURATION) {
-    treeFormatted += `Duration: ${formatDuration(tree.duration)}`;
+    treeFormatted += `                    Duration: ${formatDuration(tree.duration)}`;
   }
 
   return treeFormatted;
@@ -138,7 +140,7 @@ const writeListToFile = async (list: string): Promise<void> => {
     let currentAlbum = 1;
 
     for (const album of albumsNames) {
-      console.log(`              Album ${currentAlbum++} of ${albumsCount}`);
+      console.log(`                   Album ${currentAlbum++} of ${albumsCount}`);
       const songs = await getFolderContents({ path: `${MUSIC_DIR}/${artist}/${album}`, isSkipFolders: true });
 
       totalSongsCount += songs.length;
@@ -181,7 +183,10 @@ const writeListToFile = async (list: string): Promise<void> => {
 
   console.log('\n');
   console.log(formatTree(tree));
-  console.log('\n');
   await writeListToFile(formatTree(tree));
-  console.log('collection was saved to file node-audio-collection.txt');
+  console.log('\ncollection was saved to file node-audio-collection.txt\n');
+
+  const diff = moment().diff(dateStart);
+  const duration = moment.duration(diff);
+  console.log(`Total worked: ${duration.humanize()}`);
 })();
