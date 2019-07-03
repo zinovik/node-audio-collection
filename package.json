@@ -39,6 +39,7 @@
     "typescript": "^3.5.1"
   },
   "dependencies": {
+    "moment": "^2.24.0",
     "mp3-duration": "^1.1.0",
     "node-id3": "^0.1.7",
     "ts-node": "^8.2.0"
