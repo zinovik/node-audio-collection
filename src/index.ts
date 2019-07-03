@@ -187,6 +187,5 @@ const writeListToFile = async (list: string): Promise<void> => {
   console.log('\ncollection was saved to file node-audio-collection.txt\n');
 
   const diff = moment().diff(dateStart);
-  const duration = moment.duration(diff);
-  console.log(`Total worked: ${duration.humanize()}`);
+  console.log(`Total worked: ${moment.duration(diff).humanize()}`);
 })();
