@@ -3,7 +3,7 @@ import * as moment from 'moment';
 
 import { Collector } from './collector/Collector';
 import { FileSystemService } from './file-system/FileSystemService.service';
-import { Id3TagsService } from './tags/model/Id3Tags.service';
+import { Id3TagsService } from './tags/Id3Tags.service';
 import { FileInfoService } from './file-info/FileInfo.service';
 import { FormatService } from './format/Format.service';
 

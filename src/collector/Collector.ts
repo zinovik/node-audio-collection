@@ -26,7 +26,7 @@ export class Collector implements ICollector {
     const formatted = this.formatService.format(tree);
 
     await this.fileSystemService.writeListToFile('node-audio-collection.txt', formatted);
-    console.log(formatted);
+    console.log(`\n${formatted}`);
     console.log('\ncollection was saved to file node-audio-collection.txt');
   }
 
@@ -50,6 +50,8 @@ export class Collector implements ICollector {
   }
 
   private async fillTree(folder: IFolder): Promise<IFolder> {
+    console.log(`Processing folder: ${folder.path}/${folder.name}`);
+
     const subFolders: IFolder[] = [];
 
     for (const currentFolder of folder.subFolders) {
@@ -67,10 +69,14 @@ export class Collector implements ICollector {
         genre = '';
       }
 
+      const fileInfoPromises = [];
+
       for (const file of folder.filesNames) {
-        console.log(`Processing file: ${folder.path}/${folder.name}/${file}`);
-        duration += (await this.fileInfoService.getFileInfo(`${folder.path}/${folder.name}/${file}`)).duration;
+        fileInfoPromises.push(this.fileInfoService.getFileInfo(`${folder.path}/${folder.name}/${file}`));
       }
+
+      const filesInfos = await Promise.all(fileInfoPromises);
+      duration += filesInfos.reduce((sum, fileInfo) => sum + fileInfo.duration, 0);
     }
 
     return { ...folder, subFolders, genre, duration };

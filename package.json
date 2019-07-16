@@ -1,6 +1,6 @@
 {
   "name": "node-audio-collection",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "node audio collection",
   "main": "lib/index.js",
   "bin": {

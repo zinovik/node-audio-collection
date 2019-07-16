@@ -8,8 +8,8 @@ export class FormatService implements IFormatService {
     let treeFormatted = '';
 
     if (!level) {
-      treeFormatted += '\n';
       treeFormatted += '-'.repeat(140);
+      treeFormatted += '\n';
     }
 
     let line = `${level ? '  '.repeat(level) : ''}${folder.name}`.padEnd(100, ' ');
@@ -22,16 +22,14 @@ export class FormatService implements IFormatService {
       line += folder.genre;
     }
 
+    treeFormatted += line.trimRight();
     treeFormatted += '\n';
 
     for (const currentFolder of folder.subFolders) {
-      line += this.format(currentFolder, level + 1);
+      treeFormatted += this.format(currentFolder, level + 1);
     }
 
-    treeFormatted += line.trim();
-
     if (!level) {
-      treeFormatted += '\n';
       treeFormatted += '-'.repeat(140);
     }
 
