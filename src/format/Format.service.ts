@@ -1,15 +1,15 @@
 import * as moment from 'moment';
 
 import { IFormatService } from './IFormatService.interface';
-import { IFolder } from '../common/IFolder.interface';
+import { IFolder } from '../common/model/IFolder.interface';
 
 export class FormatService implements IFormatService {
   format(folder: IFolder, level = 0): string {
     let treeFormatted = '';
 
     if (!level) {
-      treeFormatted += '-'.repeat(140);
       treeFormatted += '\n';
+      treeFormatted += '-'.repeat(140);
     }
 
     let line = `${level ? '  '.repeat(level) : ''}${folder.name}`.padEnd(100, ' ');
@@ -31,6 +31,7 @@ export class FormatService implements IFormatService {
     treeFormatted += line.trim();
 
     if (!level) {
+      treeFormatted += '\n';
       treeFormatted += '-'.repeat(140);
     }
 

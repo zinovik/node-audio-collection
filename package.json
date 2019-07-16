@@ -1,6 +1,6 @@
 {
   "name": "node-audio-collection",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "node audio collection",
   "main": "lib/index.js",
   "bin": {
@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/index.ts",
-    "test": "jest --config jestconfig.json",
+    "test": "jest --config jestconfig.json --collectCoverage",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",
@@ -33,18 +33,19 @@
   "homepage": "https://github.com/zinovik/node-audio-collection#readme",
   "devDependencies": {
     "@types/jest": "^24.0.15",
-    "@types/node": "^12.6.2",
+    "@types/node": "^12.6.3",
     "jest": "^24.8.0",
     "prettier": "^1.18.2",
     "ts-jest": "^24.0.2",
     "tslint": "^5.18.0",
     "tslint-config-prettier": "^1.18.0",
+    "typemoq": "^2.1.0",
     "typescript": "^3.5.3"
   },
   "dependencies": {
     "moment": "^2.24.0",
     "mp3-duration": "^1.1.0",
-    "node-id3": "^0.1.7",
+    "node-id3": "^0.1.8",
     "ts-node": "^8.3.0"
   },
   "files": [

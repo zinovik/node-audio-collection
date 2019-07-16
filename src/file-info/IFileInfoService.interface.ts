@@ -1,4 +1,4 @@
-import { IFileInfo } from './IFileInfo.interface';
+import { IFileInfo } from './model/IFileInfo.interface';
 
 export interface IFileInfoService {
 
