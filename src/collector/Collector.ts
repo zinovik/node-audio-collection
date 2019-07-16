@@ -3,8 +3,8 @@ import { IFileSystemService } from '../file-system/IFileSystemService.interface'
 import { ITagsService } from '../tags/ITagsService.interface';
 import { IFileInfoService } from '../file-info/IFileInfoService.interface';
 import { IFormatService } from '../format/IFormatService.interface';
-
-import { IFolder } from '../common/IFolder.interface';
+import { NoPathError } from './error/BadResponseError';
+import { IFolder } from '../common/model/IFolder.interface';
 
 export class Collector implements ICollector {
   constructor(
@@ -15,6 +15,10 @@ export class Collector implements ICollector {
   ) {}
 
   async collect(path: string, folderName: string): Promise<void> {
+    if (!path || !folderName) {
+      throw new NoPathError();
+    }
+
     const emptyTree = await this.getTree(path, folderName);
 
     const tree = await this.fillTree(emptyTree);
@@ -23,8 +27,7 @@ export class Collector implements ICollector {
 
     await this.fileSystemService.writeListToFile('node-audio-collection.txt', formatted);
     console.log(formatted);
-    console.log('\n');
-    console.log('collection was saved to file node-audio-collection.txt');
+    console.log('\ncollection was saved to file node-audio-collection.txt');
   }
 
   private async getTree(path: string, folderName: string): Promise<IFolder> {
@@ -59,17 +62,14 @@ export class Collector implements ICollector {
 
     if (folder.filesNames.length) {
       try {
-        if (folder.filesNames[0].endsWith('mp3')) {
-          ({ genre } = await this.tagsService.getTags(`${folder.path}/${folder.name}/${folder.filesNames[0]}`));
-        }
+        ({ genre } = await this.tagsService.getTags(`${folder.path}/${folder.name}/${folder.filesNames[0]}`));
       } catch {
         genre = '';
       }
 
       for (const file of folder.filesNames) {
-        if (file.endsWith('mp3')) {
-          duration += (await this.fileInfoService.getFileInfo(`${folder.path}/${folder.name}/${file}`)).duration;
-        }
+        console.log(`Processing file: ${folder.path}/${folder.name}/${file}`);
+        duration += (await this.fileInfoService.getFileInfo(`${folder.path}/${folder.name}/${file}`)).duration;
       }
     }
 
