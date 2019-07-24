@@ -1,5 +1,4 @@
 coverage/
 lib/
 node_modules/
-yarn.lock
 node-audio-collection.txt

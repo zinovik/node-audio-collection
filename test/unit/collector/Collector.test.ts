@@ -26,12 +26,7 @@ describe('Collector', () => {
     fileInfoServiceMock = Mock.ofType<IFileInfoService>();
     formatServiceMock = Mock.ofType<IFormatService>();
 
-    collector = new Collector(
-      fileSystemServiceMock.object,
-      tagsServiceMock.object,
-      fileInfoServiceMock.object,
-      formatServiceMock.object,
-    );
+    collector = new Collector(fileSystemServiceMock.object, tagsServiceMock.object, fileInfoServiceMock.object, formatServiceMock.object);
   });
 
   afterEach(() => {
@@ -85,13 +80,7 @@ describe('Collector', () => {
     expect(true).toBeTruthy();
   });
 
-  function fileSystemServiceMockGetFolderContents({
-    subFoldersNames,
-    filesNames,
-  }: {
-    subFoldersNames: string[];
-    filesNames: string[];
-  }) {
+  function fileSystemServiceMockGetFolderContents({ subFoldersNames, filesNames }: { subFoldersNames: string[]; filesNames: string[] }) {
     fileSystemServiceMock
       .setup((x: IFileSystemService) => x.getFolderContents('./Music'))
       .returns(async () => {
@@ -108,9 +97,7 @@ describe('Collector', () => {
   }
 
   function fileSystemServiceMockWriteListToFileNeverCalled() {
-    fileSystemServiceMock
-      .setup((x: IFileSystemService) => x.writeListToFile(It.isAny(), It.isAny()))
-      .verifiable(Times.never());
+    fileSystemServiceMock.setup((x: IFileSystemService) => x.writeListToFile(It.isAny(), It.isAny())).verifiable(Times.never());
   }
 
   function tagsServiceMockGetTagsNeverCalled() {
