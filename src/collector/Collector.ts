@@ -14,14 +14,21 @@ export class Collector implements ICollector {
     private formatService: IFormatService,
   ) {}
 
-  async collect(path: string, folderName: string): Promise<void> {
+  async collect(path: string, folderName: string, options?: string): Promise<void> {
     if (!path || !folderName) {
       throw new NoPathError();
     }
 
-    const emptyTree = await this.getTree(path, folderName);
+    let emptyTree: IFolder;
 
-    const tree = await this.fillTree(emptyTree);
+    try {
+      emptyTree = await this.getTree(path, folderName);
+    } catch (error) {
+      console.log(error.message);
+      return;
+    }
+
+    const tree = await this.fillTree(emptyTree, options !== undefined);
 
     const formatted = this.formatService.format(tree);
 
@@ -49,24 +56,24 @@ export class Collector implements ICollector {
     return clearFolder;
   }
 
-  private async fillTree(folder: IFolder): Promise<IFolder> {
+  private async fillTree(folder: IFolder, isSkip?: boolean): Promise<IFolder> {
     console.log(`Processing folder: ${folder.path}/${folder.name}`);
 
     const subFolders: IFolder[] = [];
 
     for (const currentFolder of folder.subFolders) {
-      const folderWithData = await this.fillTree(currentFolder);
+      const folderWithData = await this.fillTree(currentFolder, isSkip);
       subFolders.push(folderWithData);
     }
 
-    let genre: string | undefined;
+    let genre: string | undefined = '';
     let duration = 0;
 
-    if (folder.filesNames.length) {
+    if (folder.filesNames.length && !isSkip) {
       try {
         ({ genre } = await this.tagsService.getTags(`${folder.path}/${folder.name}/${folder.filesNames[0]}`));
       } catch {
-        genre = '';
+        //
       }
 
       const fileInfoPromises = [];
