@@ -1,18 +1,12 @@
 import { ICollector } from './ICollector.interface';
 import { IFileSystemService } from '../file-system/IFileSystemService.interface';
-import { ITagsService } from '../tags/ITagsService.interface';
-import { IFileInfoService } from '../file-info/IFileInfoService.interface';
+import { IMetadataService } from '../metadata/IMetadataService.interface';
 import { IFormatService } from '../format/IFormatService.interface';
 import { NoPathError } from './error/BadResponseError';
 import { IFolder } from '../common/model/IFolder.interface';
 
 export class Collector implements ICollector {
-  constructor(
-    private fileSystemService: IFileSystemService,
-    private tagsService: ITagsService,
-    private fileInfoService: IFileInfoService,
-    private formatService: IFormatService,
-  ) {}
+  constructor(private fileSystemService: IFileSystemService, private metadataService: IMetadataService, private formatService: IFormatService) {}
 
   async collect(path: string, folderName: string, options?: string): Promise<void> {
     if (!path || !folderName) {
@@ -66,26 +60,23 @@ export class Collector implements ICollector {
       subFolders.push(folderWithData);
     }
 
-    let genre: string | undefined = '';
+    let genre: string[] | undefined = [];
     let duration = 0;
 
     if (folder.filesNames.length && !isSkip) {
       try {
-        ({ genre } = await this.tagsService.getTags(`${folder.path}/${folder.name}/${folder.filesNames[0]}`));
+        ({
+          common: { genre },
+        } = await this.metadataService.getMetadata(`${folder.path}/${folder.name}/${folder.filesNames[0]}`));
       } catch {
         //
       }
 
-      const fileInfoPromises = [];
-
       for (const file of folder.filesNames) {
-        fileInfoPromises.push(this.fileInfoService.getFileInfo(`${folder.path}/${folder.name}/${file}`));
+        duration += (await this.metadataService.getMetadata(`${folder.path}/${folder.name}/${file}`)).format.duration || 0;
       }
-
-      const filesInfos = await Promise.all(fileInfoPromises);
-      duration += filesInfos.reduce((sum, fileInfo) => sum + fileInfo.duration, 0);
     }
 
-    return { ...folder, subFolders, genre, duration };
+    return { ...folder, subFolders, genre: genre && genre.join(''), duration };
   }
 }

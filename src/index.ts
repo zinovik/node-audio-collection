@@ -3,19 +3,14 @@ import * as moment from 'moment';
 
 import { Collector } from './collector/Collector';
 import { FileSystemService } from './file-system/FileSystemService.service';
-import { Id3TagsService } from './tags/Id3Tags.service';
-import { MetadataService } from './tags/Metadata.service';
-import { FileInfoService } from './file-info/FileInfo.service';
+import { MetadataService } from './metadata/Metadata.service';
 import { FormatService } from './format/Format.service';
 
 const fileSystemService = new FileSystemService();
-const id3TagsService = new Id3TagsService();
 const metadataService = new MetadataService();
-const fileInfoService = new FileInfoService();
 const formatService = new FormatService();
 
-// const collector = new Collector(fileSystemService, id3TagsService, fileInfoService, formatService);
-const collector = new Collector(fileSystemService, metadataService, fileInfoService, formatService);
+const collector = new Collector(fileSystemService, metadataService, formatService);
 
 console.log('node-audio-collection started!\n');
 
