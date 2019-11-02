@@ -2,8 +2,7 @@ import { IMock, Mock, It, Times } from 'typemoq';
 
 import { Collector } from '../../../src/collector/Collector';
 import { IFileSystemService } from '../../../src/file-system/IFileSystemService.interface';
-import { ITagsService } from '../../../src/tags/ITagsService.interface';
-import { IFileInfoService } from '../../../src/file-info/IFileInfoService.interface';
+import { IMetadataService } from '../../../src/metadata/IMetadataService.interface';
 import { IFormatService } from '../../../src/format/IFormatService.interface';
 
 import { NoPathError } from '../../../src/collector/error/BadResponseError';
@@ -14,25 +13,22 @@ test('create new instance', () => {
 
 describe('Collector', () => {
   let fileSystemServiceMock: IMock<IFileSystemService>;
-  let tagsServiceMock: IMock<ITagsService>;
-  let fileInfoServiceMock: IMock<IFileInfoService>;
+  let metadataServiceMock: IMock<IMetadataService>;
   let formatServiceMock: IMock<IFormatService>;
 
   let collector: Collector;
 
   beforeEach(() => {
     fileSystemServiceMock = Mock.ofType<IFileSystemService>();
-    tagsServiceMock = Mock.ofType<ITagsService>();
-    fileInfoServiceMock = Mock.ofType<IFileInfoService>();
+    metadataServiceMock = Mock.ofType<IMetadataService>();
     formatServiceMock = Mock.ofType<IFormatService>();
 
-    collector = new Collector(fileSystemServiceMock.object, tagsServiceMock.object, fileInfoServiceMock.object, formatServiceMock.object);
+    collector = new Collector(fileSystemServiceMock.object, metadataServiceMock.object, formatServiceMock.object);
   });
 
   afterEach(() => {
     fileSystemServiceMock.verifyAll();
-    tagsServiceMock.verifyAll();
-    fileInfoServiceMock.verifyAll();
+    metadataServiceMock.verifyAll();
     formatServiceMock.verifyAll();
   });
 
@@ -41,8 +37,7 @@ describe('Collector', () => {
     const path = '';
     const folderName = 'Music';
     fileSystemServiceMockGetFolderContentsNeverCalled();
-    tagsServiceMockGetTagsNeverCalled();
-    fileInfoServiceMockGetFileInfoNeverCalled();
+    metadataServiceMockGetMetadataNeverCalled();
     formatServiceMockFormatNeverCalled();
     fileSystemServiceMockWriteListToFileNeverCalled();
 
@@ -55,8 +50,7 @@ describe('Collector', () => {
     const path = '/';
     const folderName = '';
     fileSystemServiceMockGetFolderContentsNeverCalled();
-    tagsServiceMockGetTagsNeverCalled();
-    fileInfoServiceMockGetFileInfoNeverCalled();
+    metadataServiceMockGetMetadataNeverCalled();
     formatServiceMockFormatNeverCalled();
     fileSystemServiceMockWriteListToFileNeverCalled();
 
@@ -100,12 +94,8 @@ describe('Collector', () => {
     fileSystemServiceMock.setup((x: IFileSystemService) => x.writeListToFile(It.isAny(), It.isAny())).verifiable(Times.never());
   }
 
-  function tagsServiceMockGetTagsNeverCalled() {
-    tagsServiceMock.setup((x: ITagsService) => x.getTags(It.isAny())).verifiable(Times.never());
-  }
-
-  function fileInfoServiceMockGetFileInfoNeverCalled() {
-    fileInfoServiceMock.setup((x: IFileInfoService) => x.getFileInfo(It.isAny())).verifiable(Times.never());
+  function metadataServiceMockGetMetadataNeverCalled() {
+    metadataServiceMock.setup((x: IMetadataService) => x.getMetadata(It.isAny())).verifiable(Times.never());
   }
 
   function formatServiceMockFormatNeverCalled() {
