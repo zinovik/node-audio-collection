@@ -1,5 +1,5 @@
-import * as musicMetadata from 'music-metadata';
+import { IMetadata } from './model/IMetadata.interface';
 
 export interface IMetadataService {
-  getMetadata(path: string): Promise<musicMetadata.IAudioMetadata>;
+  getMetadata(path: string): Promise<IMetadata>;
 }

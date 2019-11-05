@@ -8,23 +8,35 @@ import { IFolder } from '../common/model/IFolder.interface';
 export class Collector implements ICollector {
   constructor(private fileSystemService: IFileSystemService, private metadataService: IMetadataService, private formatService: IFormatService) {}
 
-  async collect(path: string, folderName: string, options?: string): Promise<void> {
+  async collect(path: string, folderName: string): Promise<void> {
     if (!path || !folderName) {
       throw new NoPathError();
     }
 
     let emptyTree: IFolder;
+    let tree: IFolder;
 
     try {
+      console.log('building folders and files tree...\n');
       emptyTree = await this.getTree(path, folderName);
     } catch (error) {
       console.log(error.message);
       return;
     }
+    console.log('the folders and files tree was successfully builded\n');
 
-    const tree = await this.fillTree(emptyTree, options !== undefined);
+    try {
+      console.log('filling the tree with metadata...\n');
+      tree = await this.fillTree(emptyTree);
+    } catch (error) {
+      console.log(error.message);
+      return;
+    }
+    console.log('the tree was successfully filled...\n');
 
+    console.log('formatting the tree...\n');
     const formatted = this.formatService.format(tree);
+    console.log('the tree was successfully formated\n');
 
     await this.fileSystemService.writeListToFile('node-audio-collection.txt', formatted);
     console.log(`\n${formatted}`);
@@ -50,33 +62,37 @@ export class Collector implements ICollector {
     return clearFolder;
   }
 
-  private async fillTree(folder: IFolder, isSkip?: boolean): Promise<IFolder> {
+  private async fillTree(folder: IFolder): Promise<IFolder> {
     console.log(`Processing folder: ${folder.path}/${folder.name}`);
 
     const subFolders: IFolder[] = [];
 
     for (const currentFolder of folder.subFolders) {
-      const folderWithData = await this.fillTree(currentFolder, isSkip);
-      subFolders.push(folderWithData);
+      const subFolderWithData = await this.fillTree(currentFolder);
+      subFolders.push(subFolderWithData);
     }
 
-    let genre: string[] | undefined = [];
+    let genre = '';
     let duration = 0;
 
-    if (folder.filesNames.length && !isSkip) {
-      try {
-        ({
-          common: { genre },
-        } = await this.metadataService.getMetadata(`${folder.path}/${folder.name}/${folder.filesNames[0]}`));
-      } catch {
-        //
-      }
-
-      for (const file of folder.filesNames) {
-        duration += (await this.metadataService.getMetadata(`${folder.path}/${folder.name}/${file}`)).format.duration || 0;
+    if (subFolders.length) {
+      for (const subFolder of subFolders) {
+        duration += subFolder.duration || 0;
       }
     }
 
-    return { ...folder, subFolders, genre: genre && genre.join(''), duration };
+    if (folder.filesNames.length) {
+      for (const file of folder.filesNames) {
+        const fileMetadata = await this.metadataService.getMetadata(`${folder.path}/${folder.name}/${file}`);
+
+        if (!genre) {
+          genre = fileMetadata.genre;
+        }
+
+        duration += fileMetadata.duration;
+      }
+    }
+
+    return { ...folder, subFolders, genre, duration };
   }
 }

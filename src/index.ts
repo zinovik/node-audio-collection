@@ -17,7 +17,7 @@ console.log('node-audio-collection started!\n');
 (async () => {
   const dateStart = moment();
 
-  await collector.collect(process.cwd(), process.argv[2], process.argv[3]);
+  await collector.collect(process.cwd(), process.argv[2]);
 
   const diff = moment().diff(dateStart);
 
