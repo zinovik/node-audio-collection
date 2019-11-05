@@ -4,6 +4,7 @@ import { IMetadataService } from '../metadata/IMetadataService.interface';
 import { IFormatService } from '../format/IFormatService.interface';
 import { NoPathError } from './error/BadResponseError';
 import { IFolder } from '../common/model/IFolder.interface';
+import { IMetadata } from '../metadata/model/IMetadata.interface';
 
 export class Collector implements ICollector {
   constructor(private fileSystemService: IFileSystemService, private metadataService: IMetadataService, private formatService: IFormatService) {}
@@ -20,7 +21,7 @@ export class Collector implements ICollector {
       console.log('building folders and files tree...\n');
       emptyTree = await this.getTree(path, folderName);
     } catch (error) {
-      console.log(error.message);
+      console.error(error.message);
       return;
     }
     console.log('the folders and files tree was successfully builded\n');
@@ -29,7 +30,7 @@ export class Collector implements ICollector {
       console.log('filling the tree with metadata...\n');
       tree = await this.fillTree(emptyTree);
     } catch (error) {
-      console.log(error.message);
+      console.error(error.message);
       return;
     }
     console.log('the tree was successfully filled...\n');
@@ -83,7 +84,13 @@ export class Collector implements ICollector {
 
     if (folder.filesNames.length) {
       for (const file of folder.filesNames) {
-        const fileMetadata = await this.metadataService.getMetadata(`${folder.path}/${folder.name}/${file}`);
+        let fileMetadata: IMetadata = { genre: '', duration: 0 };
+        try {
+          fileMetadata = await this.metadataService.getMetadata(`${folder.path}/${folder.name}/${file}`);
+        } catch (error) {
+          console.error(`${folder.path}/${folder.name}/${file}`);
+          console.error(error.message);
+        }
 
         if (!genre) {
           genre = fileMetadata.genre;
