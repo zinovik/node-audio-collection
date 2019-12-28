@@ -1,6 +1,6 @@
 {
   "name": "node-audio-collection",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "node audio collection",
   "main": "lib/index.js",
   "bin": {
@@ -12,7 +12,7 @@
     "start": "ts-node src/index.ts",
     "test": "jest --config jestconfig.json --collectCoverage",
     "format": "prettier --write \"src/**/*.ts*\" \"test*/**/*.ts*\"",
-    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "lint": "eslint . --ext .ts",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint"
@@ -32,20 +32,22 @@
   },
   "homepage": "https://github.com/zinovik/node-audio-collection#readme",
   "devDependencies": {
-    "@types/jest": "^24.0.21",
-    "@types/node": "^12.12.5",
+    "@types/jest": "^24.0.25",
+    "@types/node": "^13.1.1",
+    "@typescript-eslint/eslint-plugin": "^2.13.0",
+    "@typescript-eslint/parser": "^2.13.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.9.0",
     "jest": "^24.9.0",
-    "prettier": "^1.18.2",
-    "ts-jest": "^24.1.0",
-    "tslint": "^5.20.0",
-    "tslint-config-prettier": "^1.18.0",
-    "ts-node": "^8.4.1",
+    "prettier": "^1.19.1",
+    "ts-jest": "^24.2.0",
+    "ts-node": "^8.5.4",
     "typemoq": "^2.1.0",
-    "typescript": "^3.6.4"
+    "typescript": "^3.7.4"
   },
   "dependencies": {
     "moment": "^2.24.0",
-    "music-metadata": "^4.8.4"
+    "music-metadata": "^5.4.1"
   },
   "files": [
     "lib/**/*"
